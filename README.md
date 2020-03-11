@@ -1,2 +1,2 @@
 # ToolsToLive.ConcurrentCache
-Cache that you can use in different threads. Jobs (methods to retrieve data) with the same key won't be run more than once at a time.
+A cache that you can use in different threads. Jobs (data extraction methods) with the same key are executed only once, even if they are called simultaneously from different threads.
