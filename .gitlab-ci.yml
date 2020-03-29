@@ -1,0 +1,74 @@
+variables:
+  configuration: Release
+  version: 1.0.0
+
+stages:
+  - build
+  - pack
+  - publish
+
+build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  script:
+    - dotnet publish ToolsToLive.ConcurrentCache/ToolsToLive.ConcurrentCache.csproj -c $configuration /p:Version=$version.$CI_PIPELINE_IID -o ToolsToLive.ConcurrentCache/bin/$configuration/publish
+  artifacts:
+    expire_in: 1h
+    name: "ToolsToLive.ConcurrentCache.$CI_PIPELINE_ID"
+    paths:
+      - ToolsToLive.ConcurrentCache/bin/$configuration/publish
+  except:
+    - master
+    - alpha
+
+# pack (alpha and master)
+.pack_definition:
+  stage: pack
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  script:
+    - dotnet pack -c $configuration /p:Version=$Ver
+  artifacts:
+    expire_in: 1h
+    name: "ToolsToLive.ConcurrentCache.$CI_PIPELINE_ID"
+    paths:
+      - ToolsToLive.ConcurrentCache/bin/$configuration/ToolsToLive.ConcurrentCache.$Ver.nupkg
+
+pack_master:
+  extends: .pack_definition
+  variables:
+    Ver: $version
+  only:
+    - master
+
+pack_alpha:
+  extends: .pack_definition
+  variables:
+    Ver: $version-alpha.$CI_PIPELINE_IID
+  only:
+    - alpha
+
+# publish (send to nuget)
+.publish_definition:
+  stage: publish
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  when: manual
+  script:
+    - dotnet nuget push ToolsToLive.ConcurrentCache/bin/$configuration/ToolsToLive.ConcurrentCache.$Ver.nupkg --source https://api.nuget.org/v3/index.json --api-key $nugetpush
+
+publish_master:
+  extends: .publish_definition
+  dependencies:
+    - pack_master
+  variables:
+    Ver: $version
+  only:
+    - master
+  
+publish_alpha:
+  extends: .publish_definition
+  dependencies:
+    - pack_alpha
+  variables:
+    Ver: $version-alpha.$CI_PIPELINE_IID
+  only:
+    - alpha
