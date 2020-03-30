@@ -7,8 +7,8 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Copyright>ToitskyMA, horinf</Copyright>
     <PackageTags>Cache, Concurrent cache</PackageTags>
-    <RepositoryUrl>https://github.com/horinf/ToolsToLive.AuthCore.MySql</RepositoryUrl>
-    <Description>User managament (auth with JWT)</Description>
+    <RepositoryUrl>https://github.com/horinf/ToolsToLive.ConcurrentCache</RepositoryUrl>
+    <Description>Concurrent cache - use as many threads as you want, only one task for each key will be executed</Description>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
