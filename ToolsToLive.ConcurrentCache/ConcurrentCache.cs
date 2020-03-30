@@ -14,7 +14,7 @@ namespace ToolsToLive.ConcurrentCache
     /// Only one task to retrieve a value is running for each key, regardless of the number of concurrent requests from different threads. In this case,
     /// all threads will wait for the task to be completed and, after its completion, will receive the corresponding value.
     /// </summary>
-    public class ConcurrentCacheProvider : IConcurrentCache
+    public class ConcurrentCache : IConcurrentCache
     {
         private readonly ICacheStorage _cacheStorage;
 
@@ -22,7 +22,7 @@ namespace ToolsToLive.ConcurrentCache
         /// Default constructor.
         /// </summary>
         /// <param name="cacheStore">Cache storage interface, e.g. memory cache, Redis or combined cache.</param>
-        public ConcurrentCacheProvider(ICacheStorage cacheStore)
+        public ConcurrentCache(ICacheStorage cacheStore)
         {
             _cacheStorage = cacheStore;
         }

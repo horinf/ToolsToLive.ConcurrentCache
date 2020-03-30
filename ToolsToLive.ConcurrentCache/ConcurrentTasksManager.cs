@@ -18,10 +18,7 @@ namespace ToolsToLive.ConcurrentCache
             _requestLocker = new object();
         }
 
-        /// <summary>
-        /// Register a task to get a value from data source function (save task to list).
-        /// If the task already exists, it is not created (returned from the list).
-        /// </summary>
+        /// <inheritdoc />
         public Task<T> RunTask<T>(string key, Func<T> dataSourceFunc)
         {
             Task<T> task;
@@ -39,10 +36,7 @@ namespace ToolsToLive.ConcurrentCache
             return task;
         }
 
-        /// <summary>
-        /// Register a task to get a value from data source function (save task to list).
-        /// If the task already exists, it is not created (returned from the list).
-        /// </summary>
+        /// <inheritdoc />
         public Task<T> RunTask<T>(string key, Func<Task<T>> dataSourceFunc)
         {
             Task<T> task;
@@ -87,19 +81,11 @@ namespace ToolsToLive.ConcurrentCache
         {
             task.ContinueWith((t) =>
             {
-                try
+                lock (_requestLocker)
                 {
-                    // If something went wrong - do nothing. Exception handling is the responsibility of the method that was called to get the value.
-                }
-                catch (ThreadAbortException) { } //The calling thread may have already closed and no longer needs the cache.
-                finally
-                {
-                    lock (_requestLocker)
+                    if (_requestsList.ContainsKey(key))
                     {
-                        if (_requestsList.ContainsKey(key))
-                        {
-                            _requestsList.Remove(key);
-                        }
+                        _requestsList.Remove(key);
                     }
                 }
             });

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ToolsToLive.ConcurrentCache.Interfaces;
 
 namespace ToolsToLive.ConcurrentCache
 {
-    public class ConcurrentCacheTasksManager
+    public class ConcurrentCacheTasksManager : IConcurrentCacheTasksManager
     {
         private readonly IConcurrentTasksManager _concurrentTasksManager;
 
@@ -17,14 +15,14 @@ namespace ToolsToLive.ConcurrentCache
             _concurrentTasksManager = concurrentTasksManager;
         }
 
-        internal Task<T> RegisterRequestAndReturnTask<T>(string key, Func<T> dataSourceFunc, ICacheStorage cacheStorage, TimeSpan expirationTimeSpan)
+        public Task<T> RegisterRequestAndReturnTask<T>(string key, Func<T> dataSourceFunc, ICacheStorage cacheStorage, TimeSpan expirationTimeSpan)
         {
             var task = _concurrentTasksManager.RunTask(key, dataSourceFunc);
             AttachTask(task, key, cacheStorage, expirationTimeSpan);
             return task;
         }
 
-        internal Task<T> RegisterRequestAndReturnTask<T>(string key, Func<Task<T>> dataSourceFunc, ICacheStorage cacheStorage, TimeSpan expirationTimeSpan)
+        public Task<T> RegisterRequestAndReturnTask<T>(string key, Func<Task<T>> dataSourceFunc, ICacheStorage cacheStorage, TimeSpan expirationTimeSpan)
         {
             var task = _concurrentTasksManager.RunTask(key, dataSourceFunc);
             AttachTask(task, key, cacheStorage, expirationTimeSpan);
