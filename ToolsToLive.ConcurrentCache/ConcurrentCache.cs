@@ -17,14 +17,17 @@ namespace ToolsToLive.ConcurrentCache
     public class ConcurrentCache : IConcurrentCache
     {
         private readonly ICacheStorage _cacheStorage;
+        private readonly ConcurrentCacheTasksManager _concurrentCacheTasksManager;
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         /// <param name="cacheStore">Cache storage interface, e.g. memory cache, Redis or combined cache.</param>
-        public ConcurrentCache(ICacheStorage cacheStore)
+        public ConcurrentCache(ICacheStorage cacheStore,
+            ConcurrentCacheTasksManager concurrentCacheTasksManager)
         {
             _cacheStorage = cacheStore;
+            _concurrentCacheTasksManager = concurrentCacheTasksManager;
         }
 
         #region depricated
@@ -65,7 +68,7 @@ namespace ToolsToLive.ConcurrentCache
                 return cacheData;
             }
 
-            return await TasksWorker.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
+            return await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -77,7 +80,7 @@ namespace ToolsToLive.ConcurrentCache
                 return cacheData;
             }
 
-            return await TasksWorker.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
+            return await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -89,7 +92,7 @@ namespace ToolsToLive.ConcurrentCache
         /// <inheritdoc />
         public async Task WarmUp<T>(string key, Func<Task<T>> dataSourceFunc, TimeSpan expirationTimeSpan)
         {
-            await TasksWorker.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
+            await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
         }
 
         /// <inheritdoc />
