@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using ToolsToLive.ConcurrentCache.Model;
 
 namespace ToolsToLive.ConcurrentCache.Interfaces
 {
@@ -23,7 +24,7 @@ namespace ToolsToLive.ConcurrentCache.Interfaces
         /// <typeparam name="T">Type of cached value.</typeparam>
         /// <param name="key">The key for the cache item to retrieve.</param>
         /// <returns>The retrieved cache item, or null if the value is not found by passed key.</returns>
-        Task<T> Get<T>(string key);
+        Task<CacheData<T>> Get<T>(string key);
 
         /// <summary>
         /// Removes the specified item from the cache.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using ToolsToLive.ConcurrentCache.Interfaces;
+using ToolsToLive.ConcurrentCache.Model;
 
 namespace ToolsToLive.ConcurrentCache
 {
@@ -62,10 +63,10 @@ namespace ToolsToLive.ConcurrentCache
         /// <inheritdoc />
         public async Task<T> GetAsync<T>(string key, Func<T> dataSourceFunc, TimeSpan expirationTimeSpan)
         {
-            T cacheData = await _cacheStorage.Get<T>(key);
+            CacheData<T> cacheData = await _cacheStorage.Get<T>(key);
             if (cacheData != null)
             {
-                return cacheData;
+                return cacheData.Value;
             }
 
             return await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
@@ -74,10 +75,10 @@ namespace ToolsToLive.ConcurrentCache
         /// <inheritdoc />
         public async Task<T> GetAsync<T>(string key, Func<Task<T>> dataSourceFunc, TimeSpan expirationTimeSpan)
         {
-            T cacheData = await _cacheStorage.Get<T>(key);
+            CacheData<T> cacheData = await _cacheStorage.Get<T>(key);
             if (cacheData != null)
             {
-                return cacheData;
+                return cacheData.Value;
             }
 
             return await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);

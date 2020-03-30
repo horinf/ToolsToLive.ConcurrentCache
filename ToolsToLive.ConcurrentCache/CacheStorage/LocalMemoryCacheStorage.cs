@@ -2,6 +2,7 @@
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 using ToolsToLive.ConcurrentCache.Interfaces;
+using ToolsToLive.ConcurrentCache.Model;
 
 namespace ToolsToLive.ConcurrentCache.CacheStorage
 {
@@ -23,32 +24,32 @@ namespace ToolsToLive.ConcurrentCache.CacheStorage
                 throw new ArgumentNullException(nameof(key), "Key for cache can not be null or empty");
             }
 
-            CacheItemPolicy policy = new CacheItemPolicy
+            var policy = new CacheItemPolicy
             {
                 AbsoluteExpiration = DateTimeOffset.UtcNow + expirationTimeSpan
             };
 
-            var valueCacheItem = new CacheItem(key, value);
+            var valueCacheItem = new CacheItem(key, new CacheData<T>(value));
             MemoryCache.Default.Set(valueCacheItem, policy);
             return Task.CompletedTask;
         }
 
         /// <inheritdoc />
-        public Task<T> Get<T>(string key)
+        public Task<CacheData<T>> Get<T>(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
                 throw new ArgumentNullException(nameof(key), "Key for cache can not be null or empty");
             }
 
-            object result = MemoryCache.Default.GetCacheItem(key)?.Value;
+            CacheData<T> result = MemoryCache.Default.GetCacheItem(key)?.Value as CacheData<T>;
 
-            if (object.Equals(result, null))
+            if (result == null)
             {
-                return null;
+                return Task.FromResult((CacheData<T>)null);
             }
 
-            return Task.FromResult((T)result);
+            return Task.FromResult(result);
         }
 
         /// <inheritdoc />
