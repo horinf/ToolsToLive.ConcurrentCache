@@ -17,14 +17,14 @@ namespace ToolsToLive.ConcurrentCache
     public class ConcurrentCache : IConcurrentCache
     {
         private readonly ICacheStorage _cacheStorage;
-        private readonly ConcurrentCacheTasksManager _concurrentCacheTasksManager;
+        private readonly IConcurrentCacheTasksManager _concurrentCacheTasksManager;
 
         /// <summary>
         /// Default constructor.
         /// </summary>
         /// <param name="cacheStore">Cache storage interface, e.g. memory cache, Redis or combined cache.</param>
         public ConcurrentCache(ICacheStorage cacheStore,
-            ConcurrentCacheTasksManager concurrentCacheTasksManager)
+            IConcurrentCacheTasksManager concurrentCacheTasksManager)
         {
             _cacheStorage = cacheStore;
             _concurrentCacheTasksManager = concurrentCacheTasksManager;
