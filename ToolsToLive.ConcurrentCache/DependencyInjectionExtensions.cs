@@ -16,9 +16,9 @@ namespace ToolsToLive.ConcurrentCache
 
         public static IServiceCollection AddConcurrentCache(this IServiceCollection services)
         {
-            services.AddScoped<IConcurrentCache, ConcurrentCache>();
-            services.AddScoped<IConcurrentCacheTasksManager, ConcurrentCacheTasksManager>();
-            services.AddScoped<IConcurrentTasksManager, ConcurrentTasksManager>();
+            services.AddSingleton<IConcurrentCache, ConcurrentCache>();
+            services.AddSingleton<IConcurrentCacheTasksManager, ConcurrentCacheTasksManager>();
+            services.AddSingleton<IConcurrentTasksManager, ConcurrentTasksManager>();
 
             return services;
         }
