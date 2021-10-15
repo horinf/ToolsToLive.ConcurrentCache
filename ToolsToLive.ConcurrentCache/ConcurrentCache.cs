@@ -7,7 +7,7 @@ namespace ToolsToLive.ConcurrentCache
 {
     /// <summary>
     /// Concurrent cache.
-    /// When retrieving a cache (calling the “Get()” or “GetAsync()” method), an attempt is made to retrieve a value from the cache storage
+    /// When retrieving a cache (calling the “GetAsync()” method), an attempt is made to retrieve a value from the cache storage
     /// (using the storage interface class passed in the constructor - use dependency injection to customize it).
     /// In case of successful retrieval of the value from the cache, it is immediately returned to the calling code.
     /// If there is no value in the cache, it is retrieved using the function passed in the parameter,
@@ -82,6 +82,18 @@ namespace ToolsToLive.ConcurrentCache
             }
 
             return await _concurrentCacheTasksManager.RegisterRequestAndReturnTask(key, dataSourceFunc, _cacheStorage, expirationTimeSpan).ConfigureAwait(false);
+        }
+
+        /// <inheritdoc />
+        public async Task<T> GetAsync<T>(string key)
+        {
+            CacheData<T> cacheData = await _cacheStorage.Get<T>(key);
+            if (cacheData != null)
+            {
+                return cacheData.Value;
+            }
+
+            return default;
         }
 
         /// <inheritdoc />

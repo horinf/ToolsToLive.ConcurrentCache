@@ -50,6 +50,13 @@ namespace ToolsToLive.ConcurrentCache.Interfaces
         Task<T> GetAsync<T>(string key, Func<Task<T>> dataSourceFunc, TimeSpan expirationTimeSpan);
 
         /// <summary>
+        /// Gets value of key. If caches are empty, returns default value of T.
+        /// </summary>
+        /// <typeparam name="T">Type of value.</typeparam>
+        /// <param name="key">A key for the cache item to retreive.</param>
+        Task<T> GetAsync<T>(string key);
+
+        /// <summary>
         /// Adds the specified item to the cache. Usually it is better to use Get method with passed Func to retreive value.
         /// Try to avoid using this method, because it will lose all the advantages of competitive access. Use the Get method with "dataSourceFunc" and "expirationTimeSpan" instead.
         /// </summary>
